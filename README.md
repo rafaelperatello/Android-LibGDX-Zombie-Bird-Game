@@ -1,4 +1,4 @@
-# An Flappy Bird similiar game to study LibDGX engine
+# An Flappy Bird similiar game to study LibGDX engine
 
-libgdx
+LibGDX
 [GitHub](https://github.com/libgdx/libgdx)
