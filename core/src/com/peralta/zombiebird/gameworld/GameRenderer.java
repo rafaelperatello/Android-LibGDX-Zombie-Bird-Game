@@ -1,10 +1,10 @@
 package com.peralta.zombiebird.gameworld;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -19,6 +19,9 @@ import com.peralta.zombiebird.zbhelpers.AssetLoader;
  */
 
 public class GameRenderer {
+    private final String LABEL_START = "Hora do Show";
+    private final String LABEL_GAME_OVER = "Deu ruim";
+    private final String LABEL_AGAIN = "Bora de novo?";
 
     private GameWorld myWorld;
     private OrthographicCamera cam;
@@ -27,6 +30,7 @@ public class GameRenderer {
     private SpriteBatch batcher;
 
     private int midPointY;
+    private int midPointX;
     private int gameHeight;
 
     // Game Objects
@@ -41,11 +45,15 @@ public class GameRenderer {
     private TextureRegion birdMid, birdDown, birdUp;
     private TextureRegion skullUp, skullDown, bar;
 
+    private GlyphLayout glyphLayoutFont;
+    private GlyphLayout glyphLayoutFontShadow;
+
     public GameRenderer(GameWorld world, int gameHeight, int midPointY) {
         myWorld = world;
 
         this.gameHeight = gameHeight;
         this.midPointY = midPointY;
+        this.midPointX = 136 / 2;
 
         cam = new OrthographicCamera();
         cam.setToOrtho(true, 136, gameHeight);
@@ -61,7 +69,6 @@ public class GameRenderer {
     }
 
     public void render(float runTime) {
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -107,24 +114,22 @@ public class GameRenderer {
                     1, 1, bird.getRotation());
         }
 
-
-        // TEMPORARY CODE! We will fix this section later:
-
         if (myWorld.isReady()) {
-            // Draw shadow first
-            AssetLoader.shadow.draw(batcher, "Touch me", (136 / 2)
-                    - (42), 76);
-            // Draw text
-            AssetLoader.font.draw(batcher, "Touch me", (136 / 2)
-                    - (42 - 1), 75);
+            glyphLayoutFontShadow.setText(AssetLoader.shadow, LABEL_START);
+            glyphLayoutFont.setText(AssetLoader.font, LABEL_START);
+            AssetLoader.shadow.draw(batcher, LABEL_START, midPointX - (glyphLayoutFontShadow.width / 2), 76);
+            AssetLoader.font.draw(batcher, LABEL_START, midPointX - (glyphLayoutFont.width / 2), 75);
         } else {
-
             if (myWorld.isGameOver()) {
-                AssetLoader.shadow.draw(batcher, "Game Over", 25, 56);
-                AssetLoader.font.draw(batcher, "Game Over", 24, 55);
+                glyphLayoutFontShadow.setText(AssetLoader.shadow, LABEL_GAME_OVER);
+                glyphLayoutFont.setText(AssetLoader.shadow, LABEL_GAME_OVER);
+                AssetLoader.shadow.draw(batcher, LABEL_GAME_OVER, midPointX - (glyphLayoutFontShadow.width / 2), 56);
+                AssetLoader.font.draw(batcher, LABEL_GAME_OVER, midPointX - (glyphLayoutFont.width / 2), 55);
 
-                AssetLoader.shadow.draw(batcher, "Try again?", 23, 76);
-                AssetLoader.font.draw(batcher, "Try again?", 24, 75);
+                glyphLayoutFontShadow.setText(AssetLoader.shadow, LABEL_AGAIN);
+                glyphLayoutFont.setText(AssetLoader.shadow, LABEL_AGAIN);
+                AssetLoader.shadow.draw(batcher, LABEL_AGAIN, midPointX - (glyphLayoutFontShadow.width / 2), 76);
+                AssetLoader.font.draw(batcher, LABEL_AGAIN, midPointX - (glyphLayoutFont.width / 2), 75);
             }
 
             // Convert integer into String
@@ -142,6 +147,9 @@ public class GameRenderer {
     }
 
     private void initGameObjects() {
+        glyphLayoutFont = new GlyphLayout();
+        glyphLayoutFontShadow = new GlyphLayout();
+
         bird = myWorld.getBird();
         scroller = myWorld.getScroller();
         frontGrass = scroller.getFrontGrass();
