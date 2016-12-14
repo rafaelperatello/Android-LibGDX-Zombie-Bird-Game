@@ -2,6 +2,7 @@ package com.peralta.zombiebird.gameworld;
 
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.peralta.zombiebird.ZBGame;
 import com.peralta.zombiebird.gameobjects.Bird;
 import com.peralta.zombiebird.gameobjects.ScrollHandler;
 import com.peralta.zombiebird.zbhelpers.AssetLoader;
@@ -14,9 +15,11 @@ public class GameWorld {
     public enum GameState {
         READY, RUNNING, GAMEOVER
     }
+
     private GameState currentState;
 
     private int score = 0;
+    public int highScore = 0;
     private int midPointY;
 
     private Bird bird;
@@ -32,6 +35,8 @@ public class GameWorld {
         // The grass should start 66 pixels below the midPointY
         scroller = new ScrollHandler(this, midPointY + 66);
         ground = new Rectangle(0, midPointY + 66, 136, 11);
+
+        highScore = ZBGame.lastHighScore;
     }
 
     public void update(float delta) {
@@ -67,11 +72,18 @@ public class GameWorld {
             AssetLoader.dead.play();
         }
 
-        if (Intersector.overlaps(bird.getBoundingCircle(), ground)) {
-            scroller.stop();
-            bird.die();
-            bird.decelerate();
-            currentState = GameState.GAMEOVER;
+        if (currentState != GameState.GAMEOVER) {
+            if (Intersector.overlaps(bird.getBoundingCircle(), ground)) {
+                scroller.stop();
+                bird.die();
+                bird.decelerate();
+                currentState = GameState.GAMEOVER;
+
+                if (score > highScore) {
+                    highScore = score;
+                    ZBGame.listener.onHighScoreUpdate(score);
+                }
+            }
         }
     }
 
@@ -82,7 +94,6 @@ public class GameWorld {
     public void addScore(int increment) {
         score += increment;
     }
-
 
     public boolean isReady() {
         return currentState == GameState.READY;

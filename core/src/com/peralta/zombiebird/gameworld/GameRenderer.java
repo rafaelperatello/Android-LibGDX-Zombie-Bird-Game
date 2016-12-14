@@ -22,6 +22,7 @@ public class GameRenderer {
     private final String LABEL_START = "Hora do Show";
     private final String LABEL_GAME_OVER = "Deu ruim";
     private final String LABEL_AGAIN = "Bora de novo?";
+    private final String LABEL_HIGH_SCORE = "High Score:";
 
     private GameWorld myWorld;
     private OrthographicCamera cam;
@@ -119,6 +120,8 @@ public class GameRenderer {
             glyphLayoutFont.setText(AssetLoader.font, LABEL_START);
             AssetLoader.shadow.draw(batcher, LABEL_START, midPointX - (glyphLayoutFontShadow.width / 2), 76);
             AssetLoader.font.draw(batcher, LABEL_START, midPointX - (glyphLayoutFont.width / 2), 75);
+
+            drawHighScore(batcher, 96);
         } else {
             if (myWorld.isGameOver()) {
                 glyphLayoutFontShadow.setText(AssetLoader.shadow, LABEL_GAME_OVER);
@@ -130,6 +133,8 @@ public class GameRenderer {
                 glyphLayoutFont.setText(AssetLoader.shadow, LABEL_AGAIN);
                 AssetLoader.shadow.draw(batcher, LABEL_AGAIN, midPointX - (glyphLayoutFontShadow.width / 2), 76);
                 AssetLoader.font.draw(batcher, LABEL_AGAIN, midPointX - (glyphLayoutFont.width / 2), 75);
+
+                drawHighScore(batcher, 96);
             }
 
             // Convert integer into String
@@ -144,6 +149,17 @@ public class GameRenderer {
         }
 
         batcher.end();
+    }
+
+    private void drawHighScore(SpriteBatch batcher, float y) {
+        String buffer = LABEL_HIGH_SCORE + " " + myWorld.highScore;
+
+        glyphLayoutFontShadow.setText(AssetLoader.shadow, buffer);
+        glyphLayoutFont.setText(AssetLoader.shadow, buffer);
+        float x = midPointX - (glyphLayoutFontShadow.width / 2);
+
+        AssetLoader.shadow.draw(batcher, buffer, x, y);
+        AssetLoader.font.draw(batcher, buffer, x, y - 1);
     }
 
     private void initGameObjects() {
